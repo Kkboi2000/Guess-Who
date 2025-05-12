@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kray-na?</title>
   <style>
     body {
@@ -12,12 +13,14 @@
 
     .page {
       display: none;
-      height: 100vh;
+      min-height: 100vh;
       width: 100vw;
       justify-content: center;
       align-items: center;
       flex-direction: column;
       position: relative;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     .show {
@@ -49,14 +52,17 @@
 
     .character-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
       gap: 10px;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
       padding: 10px;
     }
 
     .card {
-      width: 80px;
-      height: 100px;
+      width: 100%;
+      aspect-ratio: 0.8;
       perspective: 1000px;
       cursor: pointer;
     }
@@ -99,9 +105,13 @@
 
     .answer-container {
       display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       align-items: center;
       gap: 20px;
       margin-top: 20px;
+      width: 100%;
+      max-width: 400px;
     }
 
     .answer-box {
@@ -119,9 +129,12 @@
 
     #explanation-img {
       position: absolute;
-      top: 10%;
-      width: 80%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
       max-width: 800px;
+      max-height: 80vh;
       display: none;
       z-index: 3;
       cursor: pointer;
@@ -130,8 +143,9 @@
     }
 
     #overlay {
-      position: absolute;
-      top: 0; left: 0;
+      position: fixed;
+      top: 0; 
+      left: 0;
       width: 100vw;
       height: 100vh;
       background: rgba(0, 0, 0, 0.6);
@@ -142,7 +156,7 @@
     }
 
     #start-animation {
-      font-size: 2.5em;
+      font-size: clamp(2rem, 8vw, 2.5rem);
       color: white;
       position: relative;
       animation: startFlow 2s ease-in-out;
@@ -172,6 +186,56 @@
       background: #45a049;
       transform: scale(1.05);
     }
+
+    #refresh-btn {
+      background: #2196F3;
+      display: none;
+    }
+
+    #refresh-btn:hover {
+      background: #0b7dda;
+    }
+
+    .button-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .character-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      }
+      
+      .answer-box {
+        width: 80px;
+        height: 110px;
+      }
+      
+      .start-text {
+        font-size: 2.5em;
+      }
+      
+      .button-container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .character-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 8px;
+      }
+      
+      .answer-box {
+        width: 70px;
+        height: 95px;
+      }
+      
+      .start-text {
+        font-size: 2em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -189,7 +253,10 @@
 
   <div class="answer-container">
     <div class="answer-box" id="answer-box"></div>
-    <button id="save-btn" style="display:none;">Save</button>
+    <div class="button-container">
+      <button id="refresh-btn">Refresh</button>
+      <button id="save-btn" style="display:none;">Save</button>
+    </div>
   </div>
 </div>
 
@@ -204,6 +271,7 @@
   const characterGrid = document.getElementById('character-grid');
   const answerBox = document.getElementById('answer-box');
   const saveBtn = document.getElementById('save-btn');
+  const refreshBtn = document.getElementById('refresh-btn');
   const overlay = document.getElementById('overlay');
   const explanationImg = document.getElementById('explanation-img');
 
@@ -263,7 +331,7 @@
       card.addEventListener('click', () => {
         if (saveBtn.innerText === 'Save' || saveBtn.style.display === 'none') {
           selectedCardIndex = i;
-          answerBox.innerHTML = `<img src="${src}" width="80" height="100"/>`;
+          answerBox.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:contain"/>`;
           saveBtn.style.display = 'inline-block';
         } else {
           card.classList.toggle('flipped');
@@ -293,6 +361,7 @@
       setTimeout(() => {
         overlay.style.display = 'none';
         saveBtn.innerText = 'Finish';
+        refreshBtn.style.display = 'inline-block';
       }, 2000);
     } else if (saveBtn.innerText === 'Finish') {
       cards.forEach(card => card.classList.add('flipped'));
@@ -302,6 +371,13 @@
         location.reload();
       }, 1500);
     }
+  });
+
+  refreshBtn.addEventListener('click', () => {
+    // Flip all cards back to front
+    cards.forEach(card => {
+      card.classList.remove('flipped');
+    });
   });
 
   createCards();

@@ -32,7 +32,13 @@
       background-size: cover;
       position: relative;
     }
-
+    .explanation-btn {
+      background: transparent;
+      border: none;
+      font-size: 2em;
+      padding: 0;
+      margin-right: 20px;
+    }
     .start-text {
       font-size: 3em;
       animation: blink 2s infinite;
@@ -247,7 +253,7 @@
 
 <!-- GAME PAGE -->
 <div id="game-page" class="page">
-  <img id="explanation-img" src="https://i.imgur.com/4MAgBw6.png" alt="Game Explanation"/>
+  <img id="explanation-img" src="https://i.imgur.com/wuqQGIA.gif" alt="Game Explanation"/>
 
   <div class="character-grid" id="character-grid"></div>
 
@@ -274,6 +280,7 @@
   const refreshBtn = document.getElementById('refresh-btn');
   const overlay = document.getElementById('overlay');
   const explanationImg = document.getElementById('explanation-img');
+  const explanationBtn = document.getElementById('explanation-btn');
 
   const cardBackImage = 'https://i.imgur.com/Bk982is.png';
   const frontImages = [
@@ -350,7 +357,9 @@
       explanationImg.style.display = 'block';
     }, 200);
   });
-
+  explanationBtn.addEventListener('click', () => {
+    explanationImg.style.display = 'block';
+  });
   explanationImg.addEventListener('click', () => {
     explanationImg.style.display = 'none';
   });

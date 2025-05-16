@@ -28,17 +28,12 @@
     }
 
     #main-menu {
+      background: url('https://i.imgur.com/XioomRD.png') no-repeat center center;
       background: url('https://i.imgur.com/NM3ML1V.png') no-repeat center center;
       background-size: cover;
       position: relative;
     }
-    .explanation-btn {
-      background: transparent;
-      border: none;
-      font-size: 2em;
-      padding: 0;
-      margin-right: 20px;
-    }
+
     .start-text {
       font-size: 3em;
       animation: blink 2s infinite;
@@ -211,16 +206,16 @@
       .character-grid {
         grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
       }
-      
+
       .answer-box {
         width: 80px;
         height: 110px;
       }
-      
+
       .start-text {
         font-size: 2.5em;
       }
-      
+
       .button-container {
         flex-direction: column;
         align-items: center;
@@ -232,12 +227,12 @@
         grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
         gap: 8px;
       }
-      
+
       .answer-box {
         width: 70px;
         height: 95px;
       }
-      
+
       .start-text {
         font-size: 2em;
       }
@@ -280,7 +275,6 @@
   const refreshBtn = document.getElementById('refresh-btn');
   const overlay = document.getElementById('overlay');
   const explanationImg = document.getElementById('explanation-img');
-  const explanationBtn = document.getElementById('explanation-btn');
 
   const cardBackImage = 'https://i.imgur.com/Bk982is.png';
   const frontImages = [
@@ -357,9 +351,7 @@
       explanationImg.style.display = 'block';
     }, 200);
   });
-  explanationBtn.addEventListener('click', () => {
-    explanationImg.style.display = 'block';
-  });
+
   explanationImg.addEventListener('click', () => {
     explanationImg.style.display = 'none';
   });

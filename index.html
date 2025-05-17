@@ -228,7 +228,6 @@
 
     #refresh-btn {
       background: #2196F3;
-      display: none;
     }
 
     #refresh-btn:hover {
@@ -418,7 +417,6 @@
       <div class="button-container" style="justify-content: center; margin-top: 20px;">
         <button class="nav-btn" id="undo-btn"><</button>
         <button class="nav-btn" id="refresh-btn">⟳</button>
-        <button class="nav-btn" id="redo-btn">⟳</button>
         <button class="nav-btn" id="lock-btn">🔒</button>
       </div>
     </div>
@@ -453,7 +451,6 @@
   const refreshBtn = document.getElementById('refresh-btn');
   const lockBtn = document.getElementById('lock-btn');
   const undoBtn = document.getElementById('undo-btn');
-  const redoBtn = document.getElementById('redo-btn');
   const helpBtn = document.querySelector('.help-btn');
   const homeBtn = document.querySelector('.home-btn');
   const overlay = document.getElementById('overlay');
@@ -560,7 +557,7 @@
       gameGrid.appendChild(card);
 
       card.addEventListener('click', () => {
-        if (lockBtn.innerText === '🔒') {
+        if (!card.classList.contains('locked')) {
           card.classList.toggle('flipped');
           saveHistory();
         }
@@ -595,40 +592,9 @@
 
   function updateNavButtons() {
     undoBtn.disabled = historyIndex <= 0;
-    redoBtn.disabled = historyIndex >= history.length - 1;
   }
 
-  function undo() {
-    if (historyIndex > 0) {
-      historyIndex--;
-      applyHistoryState(history[historyIndex]);
-    }
-  }
-
-  function redo() {
-    if (historyIndex < history.length - 1) {
-      historyIndex++;
-      applyHistoryState(history[historyIndex]);
-    }
-  }
-
-  function applyHistoryState(state) {
-    gameCards.forEach((card, index) => {
-      if (state[index].locked) {
-        card.classList.add('locked', 'flipped');
-      } else {
-        card.classList.remove('locked');
-        if (state[index].flipped) {
-          card.classList.add('flipped');
-        } else {
-          card.classList.remove('flipped');
-        }
-      }
-    });
-    updateNavButtons();
-  }
-
-  function flipAllCardsFrontExceptLocked() {
+  function flipAllUnlockedCardsFront() {
     gameCards.forEach(card => {
       if (!card.classList.contains('locked')) {
         card.classList.remove('flipped');
@@ -637,9 +603,9 @@
     saveHistory();
   }
 
-  function flipAllCardsFront() {
+  function flipAllCardsFrontAndUnlock() {
     gameCards.forEach(card => {
-      card.classList.remove('flipped');
+      card.classList.remove('flipped', 'locked');
     });
     saveHistory();
   }
@@ -705,12 +671,12 @@
     confirmPopup.style.display = 'flex';
   });
 
-  undoBtn.addEventListener('click', flipAllCardsFrontExceptLocked);
+  undoBtn.addEventListener('click', flipAllUnlockedCardsFront);
+
   lockBtn.addEventListener('click', lockCards);
-  redoBtn.addEventListener('click', redo);
 
   confirmYes.addEventListener('click', () => {
-    flipAllCardsFront();
+    flipAllCardsFrontAndUnlock();
     confirmPopup.style.display = 'none';
   });
 

@@ -136,8 +136,8 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 20px;
-      margin: 20px auto;
+      gap: 10px;
+      margin: 10px auto;
       width: 100%;
       max-width: 400px;
     }
@@ -272,8 +272,11 @@
       border: none;
       cursor: pointer;
       z-index: 5;
-      display: none;
       color: #333;
+    }
+
+    .home-btn.hidden {
+      display: none;
     }
 
     .nav-btn {
@@ -355,6 +358,8 @@
     #page-setup {
       flex-direction: column;
       gap: 30px;
+      background: url('https://i.imgur.com/617Z62J.gif') no-repeat center center;
+      background-size: cover;
     }
 
     .setup-options {
@@ -363,12 +368,9 @@
       gap: 20px;
       width: 100%;
       max-width: 400px;
-    }
-
-    .setup-title {
-      font-size: 2em;
-      color: #333;
-      text-align: center;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 20px;
+      border-radius: 10px;
     }
 
     .setup-select {
@@ -456,22 +458,22 @@
 
 <!-- SETUP PAGE -->
 <div id="page-setup" class="page">
-  <h1 class="setup-title">Board Setup</h1>
   <div class="setup-options">
     <div class="setup-select-container">
       <label class="setup-select-label">Layout</label>
       <select class="setup-select" id="layout-select">
-        <option value="classic">Classic (4 columns)</option>
-        <option value="clear">Clear (3 columns)</option>
-        <option value="zoom">Zoom (2 columns)</option>
+        <option value="classic">Classic (6×4)</option>
+        <option value="clear">Clear (8×3)</option>
+        <option value="zoom">Zoom (12×2)</option>
       </select>
     </div>
     
     <div class="setup-select-container">
       <label class="setup-select-label">Size</label>
       <select class="setup-select" id="size-select">
-        <option value="normal">Normal (24)</option>
         <option value="mini">Mini (12)</option>
+        <option value="normal">Normal (24)</option>
+        <option value="big">Big (36)</option>
       </select>
     </div>
     
@@ -482,12 +484,13 @@
 <!-- GAME PAGE -->
 <div id="game-page" class="page">
   <button class="help-btn">💡</button>
-  <button class="home-btn">🏠︎</button>
+  <button class="home-btn hidden">🏠︎</button>
   
   <img id="explanation-img" src="https://i.imgur.com/wuqQGIA.gif" alt="Game Explanation"/>
 
   <!-- Character Selection Section -->
   <div id="character-selection" class="game-section">
+    <button class="home-btn">🏠︎</button>
     <div class="character-grid" id="character-grid"></div>
     <div class="answer-container">
       <div class="answer-box" id="answer-box">
@@ -550,7 +553,7 @@
     const lockBtn = document.getElementById('lock-btn');
     const undoBtn = document.getElementById('undo-btn');
     const helpBtn = document.querySelector('.help-btn');
-    const homeBtn = document.querySelector('.home-btn');
+    const homeBtns = document.querySelectorAll('.home-btn');
     const overlay = document.getElementById('overlay');
     const explanationImg = document.getElementById('explanation-img');
     const characterSelection = document.getElementById('character-selection');
@@ -587,7 +590,20 @@
       'https://i.imgur.com/4FYFNVJ.png',
       'https://i.imgur.com/LLw7koI.png',
       'https://i.imgur.com/cfLIX6C.png',
-      'https://i.imgur.com/jx9QlxS.png'
+      'https://i.imgur.com/jx9QlxS.png',
+      // Additional images for Big (36) mode
+      'https://i.imgur.com/example1.png',
+      'https://i.imgur.com/example2.png',
+      'https://i.imgur.com/example3.png',
+      'https://i.imgur.com/example4.png',
+      'https://i.imgur.com/example5.png',
+      'https://i.imgur.com/example6.png',
+      'https://i.imgur.com/example7.png',
+      'https://i.imgur.com/example8.png',
+      'https://i.imgur.com/example9.png',
+      'https://i.imgur.com/example10.png',
+      'https://i.imgur.com/example11.png',
+      'https://i.imgur.com/example12.png'
     ];
 
     let selectedCardIndex = null;
@@ -598,7 +614,7 @@
     let isGameAnswerRevealed = false;
     let currentGridLayout = 'classic'; // Default layout
     let currentSize = 'normal'; // Default size
-    let currentImages = []; // Will hold either all images or a subset for mini mode
+    let currentImages = []; // Will hold the current set of images
 
     function getRandomSubset(array, size) {
       const shuffled = array.slice().sort(() => 0.5 - Math.random());
@@ -610,7 +626,20 @@
       characterGrid.className = 'character-grid grid-' + currentGridLayout;
       
       // Determine which images to use based on size selection
-      currentImages = currentSize === 'mini' ? getRandomSubset(frontImages, 12) : frontImages;
+      if (currentSize === 'mini') {
+        currentImages = getRandomSubset(frontImages, 12);
+      } else if (currentSize === 'normal') {
+        currentImages = frontImages.slice(0, 24);
+      } else if (currentSize === 'big') {
+        currentImages = frontImages.slice(0, 36);
+      }
+      
+      // Reduce margins in mini mode
+      if (currentSize === 'mini') {
+        document.querySelector('.answer-container').style.margin = '5px auto';
+      } else {
+        document.querySelector('.answer-container').style.margin = '10px auto';
+      }
       
       currentImages.forEach((src, i) => {
         const card = document.createElement('div');
@@ -778,19 +807,21 @@
       explanationImg.style.display = 'none';
     });
 
-    homeBtn.addEventListener('click', () => {
-      // Reset game state and go back to setup page
-      gamePage.classList.remove('show');
-      setupPage.classList.add('show');
-      characterSelection.classList.remove('show-section');
-      gamePlay.classList.remove('show-section');
-      homeBtn.style.display = 'none';
-      saveBtn.style.display = 'none';
-      answerImage.src = '';
-      answerImage.style.display = 'none';
-      selectedCardIndex = null;
-      cards = [];
-      gameCards = [];
+    homeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Reset game state and go back to setup page
+        gamePage.classList.remove('show');
+        setupPage.classList.add('show');
+        characterSelection.classList.remove('show-section');
+        gamePlay.classList.remove('show-section');
+        document.querySelector('.home-btn').classList.add('hidden');
+        saveBtn.style.display = 'none';
+        answerImage.src = '';
+        answerImage.style.display = 'none';
+        selectedCardIndex = null;
+        cards = [];
+        gameCards = [];
+      });
     });
 
     gameAnswerBox.addEventListener('click', toggleGameAnswerBox);
@@ -803,7 +834,7 @@
           // Switch to game play section
           characterSelection.classList.remove('show-section');
           gamePlay.classList.add('show-section');
-          homeBtn.style.display = 'block';
+          document.querySelector('.home-btn').classList.remove('hidden');
           createGameCards();
           saveHistory();
         }, 2000);

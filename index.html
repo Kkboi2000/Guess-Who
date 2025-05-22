@@ -372,30 +372,25 @@
       text-align: center;
     }
 
-    .grid-options {
+    .setup-select {
+      width: 100%;
+      padding: 12px;
+      font-size: 1em;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+      font-family: Georgia, serif;
+    }
+
+    .setup-select-container {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 5px;
     }
 
-    .grid-option {
-      padding: 15px;
-      background: #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: all 0.3s;
-    }
-
-    .grid-option:hover {
-      transform: scale(1.02);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    .grid-option.selected {
-      background: #4CAF50;
-      color: white;
+    .setup-select-label {
+      font-size: 1em;
+      color: #555;
     }
 
     .continue-btn {
@@ -462,366 +457,25 @@
 
 <!-- SETUP PAGE -->
 <div id="page-setup" class="page">
-  <h1 class="setup-title">Choose Your Grid Layout</h1>
+  <h1 class="setup-title">Board Setup</h1>
   <div class="setup-options">
-    <div class="grid-options">
-      <div class="grid-option selected" data-layout="classic">Classic (6×4)</div>
-      <div class="grid-option" data-layout="clear">Clear (8×3)</div>
-      <div class="grid-option" data-layout="zoom">Zoom (12×2)</div>
+    <div class="setup-select-container">
+      <label class="setup-select-label">Layout</label>
+      <select class="setup-select" id="layout-select">
+        <option value="classic">Classic (4 columns)</option>
+        <option value="clear">Clear (3 columns)</option>
+        <option value="zoom">Zoom (2 columns)</option>
+      </select>
     </div>
+    
+    <div class="setup-select-container">
+      <label class="setup-select-label">Size</label>
+      <select class="setup-select" id="size-select">
+        <option value="normal">Normal (24)</option>
+        <option value="mini">Mini (12)</option>
+      </select>
+    </div>
+    
     <button class="continue-btn">Continue</button>
   </div>
 </div>
-
-<!-- GAME PAGE -->
-<div id="game-page" class="page">
-  <button class="help-btn">💡</button>
-  <button class="home-btn">🏠︎</button>
-  
-  <img id="explanation-img" src="https://i.imgur.com/wuqQGIA.gif" alt="Game Explanation"/>
-
-  <!-- Character Selection Section -->
-  <div id="character-selection" class="game-section">
-    <div class="character-grid" id="character-grid"></div>
-    <div class="answer-container">
-      <div class="answer-box" id="answer-box">
-        <img class="answer-image" src="" alt="" style="display: none;"/>
-      </div>
-      <div class="button-container">
-        <button id="random-btn">Random</button>
-        <button id="save-btn" style="display:none;">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Game Play Section -->
-  <div id="game-play" class="game-section">
-    <div class="character-grid" id="game-grid"></div>
-    <div class="answer-container">
-      <div class="answer-box game-answer-box" id="game-answer-box">
-        <div class="answer-cover">?</div>
-        <img class="answer-image" src="" alt=""/>
-      </div>
-      <div class="button-container" style="justify-content: center; margin-top: 20px;">
-        <button class="nav-btn" id="undo-btn"><</button>
-        <button class="nav-btn" id="refresh-btn">⟳</button>
-        <button class="nav-btn" id="lock-btn">🔒</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Overlay for animation -->
-<div id="overlay">
-  <div id="start-animation">Start</div>
-</div>
-
-<!-- Confirmation Popup -->
-<div id="confirm-popup">
-  <p>Are you sure? The locked cards will be flipped too.</p>
-  <div>
-    <button class="popup-btn" id="confirm-yes">Yes</button>
-    <button class="popup-btn" id="confirm-no">No</button>
-  </div>
-</div>
-
-<script>
-  // Wait for DOM to be fully loaded before initializing
-  document.addEventListener('DOMContentLoaded', function() {
-    const mainMenu = document.getElementById('main-menu');
-    const setupPage = document.getElementById('page-setup');
-    const gamePage = document.getElementById('game-page');
-    const characterGrid = document.getElementById('character-grid');
-    const gameGrid = document.getElementById('game-grid');
-    const answerBox = document.getElementById('answer-box');
-    const gameAnswerBox = document.getElementById('game-answer-box');
-    const answerImage = answerBox.querySelector('.answer-image');
-    const gameAnswerImage = gameAnswerBox.querySelector('.answer-image');
-    const gameAnswerCover = gameAnswerBox.querySelector('.answer-cover');
-    const saveBtn = document.getElementById('save-btn');
-    const randomBtn = document.getElementById('random-btn');
-    const refreshBtn = document.getElementById('refresh-btn');
-    const lockBtn = document.getElementById('lock-btn');
-    const undoBtn = document.getElementById('undo-btn');
-    const helpBtn = document.querySelector('.help-btn');
-    const homeBtn = document.querySelector('.home-btn');
-    const overlay = document.getElementById('overlay');
-    const explanationImg = document.getElementById('explanation-img');
-    const characterSelection = document.getElementById('character-selection');
-    const gamePlay = document.getElementById('game-play');
-    const confirmPopup = document.getElementById('confirm-popup');
-    const confirmYes = document.getElementById('confirm-yes');
-    const confirmNo = document.getElementById('confirm-no');
-    const continueBtn = document.querySelector('.continue-btn');
-    const gridOptions = document.querySelectorAll('.grid-option');
-
-    const cardBackImage = 'https://i.imgur.com/Bk982is.png';
-    const frontImages = [
-      'https://i.imgur.com/Zyf9fzX.png',
-      'https://i.imgur.com/s2mlBEZ.png',
-      'https://i.imgur.com/tMFdFOi.png',
-      'https://i.imgur.com/8AaDkuy.png',
-      'https://i.imgur.com/AkSqMkb.png',
-      'https://i.imgur.com/jtJ3HX1.png',
-      'https://i.imgur.com/X1d8YKf.png',
-      'https://i.imgur.com/duFvW8T.png',
-      'https://i.imgur.com/rMgvz9S.png',
-      'https://i.imgur.com/bO4ge9l.png',
-      'https://i.imgur.com/W3QBKx6.png',
-      'https://i.imgur.com/k4dc4gt.png',
-      'https://i.imgur.com/jkdpVhU.png',
-      'https://i.imgur.com/lWwQJ2y.png',
-      'https://i.imgur.com/UPN61qB.png',
-      'https://i.imgur.com/my3Kn8r.png',
-      'https://i.imgur.com/FgUZVWJ.png',
-      'https://i.imgur.com/2cIYvsj.png',
-      'https://i.imgur.com/Eb7FodV.png',
-      'https://i.imgur.com/UqSdmHj.png',
-      'https://i.imgur.com/4FYFNVJ.png',
-      'https://i.imgur.com/LLw7koI.png',
-      'https://i.imgur.com/cfLIX6C.png',
-      'https://i.imgur.com/jx9QlxS.png'
-    ];
-
-    let selectedCardIndex = null;
-    let cards = [];
-    let gameCards = [];
-    let history = [];
-    let historyIndex = -1;
-    let isGameAnswerRevealed = false;
-    let currentGridLayout = 'classic'; // Default layout
-
-    function createCards() {
-      characterGrid.innerHTML = '';
-      characterGrid.className = 'character-grid grid-' + currentGridLayout;
-      
-      frontImages.forEach((src, i) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.index = i;
-
-        const inner = document.createElement('div');
-        inner.className = 'inner-card';
-
-        const front = document.createElement('div');
-        front.className = 'front';
-        front.innerHTML = `<img src="${src}" />`;
-
-        const back = document.createElement('div');
-        back.className = 'back';
-        back.innerHTML = `<img src="${cardBackImage}" />`;
-
-        inner.appendChild(front);
-        inner.appendChild(back);
-        card.appendChild(inner);
-        characterGrid.appendChild(card);
-
-        card.addEventListener('click', () => {
-          if (saveBtn.innerText === 'Save' || saveBtn.style.display === 'none') {
-            selectedCardIndex = i;
-            answerImage.src = src;
-            answerImage.style.display = 'block';
-            saveBtn.style.display = 'inline-block';
-          }
-        });
-
-        cards.push(card);
-      });
-    }
-
-    function createGameCards() {
-      gameGrid.innerHTML = '';
-      gameGrid.className = 'character-grid grid-' + currentGridLayout;
-      gameCards = [];
-      
-      frontImages.forEach((src, i) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.index = i;
-
-        const inner = document.createElement('div');
-        inner.className = 'inner-card';
-
-        const front = document.createElement('div');
-        front.className = 'front';
-        front.innerHTML = `<img src="${src}" />`;
-
-        const back = document.createElement('div');
-        back.className = 'back';
-        back.innerHTML = `<img src="${cardBackImage}" />`;
-
-        inner.appendChild(front);
-        inner.appendChild(back);
-        card.appendChild(inner);
-        gameGrid.appendChild(card);
-
-        card.addEventListener('click', () => {
-          if (!card.classList.contains('locked')) {
-            card.classList.toggle('flipped');
-            saveHistory();
-          }
-        });
-
-        gameCards.push(card);
-      });
-
-      // Set the selected character in the game answer box
-      if (selectedCardIndex !== null) {
-        gameAnswerImage.src = frontImages[selectedCardIndex];
-        gameAnswerCover.style.display = 'flex';
-        isGameAnswerRevealed = false;
-      }
-    }
-
-    function saveHistory() {
-      // Only keep history up to current index
-      history = history.slice(0, historyIndex + 1);
-      
-      // Save current state
-      const currentState = gameCards.map(card => ({
-        flipped: card.classList.contains('flipped'),
-        locked: card.classList.contains('locked')
-      }));
-      history.push(currentState);
-      historyIndex = history.length - 1;
-      
-      // Update button states
-      updateNavButtons();
-    }
-
-    function updateNavButtons() {
-      undoBtn.disabled = historyIndex <= 0;
-    }
-
-    function flipAllUnlockedCardsFront() {
-      gameCards.forEach(card => {
-        if (!card.classList.contains('locked')) {
-          card.classList.remove('flipped');
-        }
-      });
-      saveHistory();
-    }
-
-    function flipAllCardsFrontAndUnlock() {
-      gameCards.forEach(card => {
-        card.classList.remove('flipped', 'locked');
-      });
-      saveHistory();
-    }
-
-    function lockCards() {
-      // Lock all currently flipped cards
-      gameCards.forEach(card => {
-        if (card.classList.contains('flipped')) {
-          card.classList.add('locked');
-        }
-      });
-      saveHistory();
-    }
-
-    function toggleGameAnswerBox() {
-      isGameAnswerRevealed = !isGameAnswerRevealed;
-      gameAnswerImage.style.display = isGameAnswerRevealed ? 'block' : 'none';
-      gameAnswerCover.style.display = isGameAnswerRevealed ? 'none' : 'flex';
-    }
-
-    function selectRandomCharacter() {
-      const randomIndex = Math.floor(Math.random() * frontImages.length);
-      selectedCardIndex = randomIndex;
-      answerImage.src = frontImages[randomIndex];
-      answerImage.style.display = 'block';
-      saveBtn.style.display = 'inline-block';
-      
-      // Auto-proceed to game after a short delay
-      setTimeout(() => {
-        saveBtn.click();
-      }, 500);
-    }
-
-    // Grid layout selection
-    gridOptions.forEach(option => {
-      option.addEventListener('click', () => {
-        gridOptions.forEach(opt => opt.classList.remove('selected'));
-        option.classList.add('selected');
-        currentGridLayout = option.dataset.layout;
-      });
-    });
-
-    document.querySelector('.start-text').addEventListener('click', () => {
-      mainMenu.classList.remove('show');
-      setupPage.classList.add('show');
-    });
-
-    continueBtn.addEventListener('click', () => {
-      setupPage.classList.remove('show');
-      gamePage.classList.add('show');
-      characterSelection.classList.add('show-section');
-      createCards();
-    });
-
-    helpBtn.addEventListener('click', () => {
-      explanationImg.style.display = 'block';
-    });
-
-    explanationImg.addEventListener('click', () => {
-      explanationImg.style.display = 'none';
-    });
-
-    homeBtn.addEventListener('click', () => {
-      // Reset game state
-      characterSelection.classList.add('show-section');
-      gamePlay.classList.remove('show-section');
-      homeBtn.style.display = 'none';
-      saveBtn.style.display = 'none';
-      answerImage.src = '';
-      answerImage.style.display = 'none';
-      selectedCardIndex = null;
-    });
-
-    gameAnswerBox.addEventListener('click', toggleGameAnswerBox);
-
-    saveBtn.addEventListener('click', () => {
-      if (saveBtn.innerText === 'Save') {
-        overlay.style.display = 'flex';
-        setTimeout(() => {
-          overlay.style.display = 'none';
-          // Switch to game play section
-          characterSelection.classList.remove('show-section');
-          gamePlay.classList.add('show-section');
-          homeBtn.style.display = 'block';
-          createGameCards();
-          saveHistory();
-        }, 2000);
-      }
-    });
-
-    randomBtn.addEventListener('click', selectRandomCharacter);
-
-    refreshBtn.addEventListener('click', () => {
-      confirmPopup.style.display = 'flex';
-    });
-
-    undoBtn.addEventListener('click', flipAllUnlockedCardsFront);
-
-    lockBtn.addEventListener('click', lockCards);
-
-    confirmYes.addEventListener('click', () => {
-      flipAllCardsFrontAndUnlock();
-      confirmPopup.style.display = 'none';
-    });
-
-    confirmNo.addEventListener('click', () => {
-      confirmPopup.style.display = 'none';
-    });
-
-    // Initialize with only main menu showing
-    mainMenu.classList.add('show');
-    setupPage.classList.remove('show');
-    gamePage.classList.remove('show');
-    characterSelection.classList.remove('show-section');
-    gamePlay.classList.remove('show-section');
-    explanationImg.style.display = 'none';
-  });
-</script>
-</body>
-</html>

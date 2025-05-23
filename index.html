@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guess-who?</title>
+  <title>Guessdom?</title>
   <style>
     body {
       margin: 0;
@@ -28,7 +28,7 @@
     }
 
     #main-menu {
-      background: url('https://i.imgur.com/OjhSXIg.gif') no-repeat center center;
+      background: url('https://i.imgur.com/qYLjTRg.gif') no-repeat center center;
       background-size: cover;
       position: relative;
     }
@@ -137,9 +137,17 @@
       justify-content: center;
       align-items: center;
       gap: 10px;
-      margin: 10px auto;
       width: 100%;
       max-width: 400px;
+    }
+
+    .mini-mode .answer-container {
+      margin: 0 auto;
+    }
+
+    .normal-mode .answer-container,
+    .big-mode .answer-container {
+      margin: 10px auto;
     }
 
     .answer-box {
@@ -358,7 +366,7 @@
     #page-setup {
       flex-direction: column;
       gap: 30px;
-      background: url('https://i.imgur.com/2iRQu09.gif') no-repeat center center;
+      background: url('https://i.imgur.com/vN3JB0c.gif') no-repeat center center;
       background-size: cover;
     }
 
@@ -477,6 +485,18 @@
       </select>
     </div>
     
+    <div class="setup-select-container">
+      <label class="setup-select-label">Type</label>
+      <select class="setup-select" id="type-select">
+        <option value="people">People</option>
+        <option value="places">Places</option>
+        <option value="animals">Animals</option>
+        <option value="foods">Foods</option>
+        <option value="activities">Activities</option>
+        <option value="mix">Mix</option>
+      </select>
+    </div>
+    
     <button class="continue-btn">Continue</button>
   </div>
 </div>
@@ -564,47 +584,203 @@
     const continueBtn = document.querySelector('.continue-btn');
     const layoutSelect = document.getElementById('layout-select');
     const sizeSelect = document.getElementById('size-select');
+    const typeSelect = document.getElementById('type-select');
 
-    const cardBackImage = 'https://i.imgur.com/Bk982is.png';
-    const frontImages = [
-      'https://i.imgur.com/Zyf9fzX.png',
-      'https://i.imgur.com/s2mlBEZ.png',
-      'https://i.imgur.com/tMFdFOi.png',
-      'https://i.imgur.com/8AaDkuy.png',
-      'https://i.imgur.com/AkSqMkb.png',
-      'https://i.imgur.com/jtJ3HX1.png',
-      'https://i.imgur.com/X1d8YKf.png',
-      'https://i.imgur.com/duFvW8T.png',
-      'https://i.imgur.com/rMgvz9S.png',
-      'https://i.imgur.com/bO4ge9l.png',
-      'https://i.imgur.com/W3QBKx6.png',
-      'https://i.imgur.com/k4dc4gt.png',
-      'https://i.imgur.com/jkdpVhU.png',
-      'https://i.imgur.com/lWwQJ2y.png',
-      'https://i.imgur.com/UPN61qB.png',
-      'https://i.imgur.com/my3Kn8r.png',
-      'https://i.imgur.com/FgUZVWJ.png',
-      'https://i.imgur.com/2cIYvsj.png',
-      'https://i.imgur.com/Eb7FodV.png',
-      'https://i.imgur.com/UqSdmHj.png',
-      'https://i.imgur.com/4FYFNVJ.png',
-      'https://i.imgur.com/LLw7koI.png',
-      'https://i.imgur.com/cfLIX6C.png',
-      'https://i.imgur.com/jx9QlxS.png',
-      // Additional images for Big (36) mode
-      'https://i.imgur.com/example1.png',
-      'https://i.imgur.com/example2.png',
-      'https://i.imgur.com/example3.png',
-      'https://i.imgur.com/example4.png',
-      'https://i.imgur.com/example5.png',
-      'https://i.imgur.com/example6.png',
-      'https://i.imgur.com/example7.png',
-      'https://i.imgur.com/example8.png',
-      'https://i.imgur.com/example9.png',
-      'https://i.imgur.com/example10.png',
-      'https://i.imgur.com/example11.png',
-      'https://i.imgur.com/example12.png'
-    ];
+    const cardBackImage = 'https://i.imgur.com/aulWtip.png';
+    
+    // Image sets for different categories
+    const imageSets = {
+      people: [
+        'https://i.imgur.com/Zyf9fzX.png',
+        'https://i.imgur.com/GfsyhDB.png',
+        'https://i.imgur.com/tMFdFOi.png',
+        'https://i.imgur.com/JJsPgaI.png',
+        'https://i.imgur.com/AkSqMkb.png',
+        'https://i.imgur.com/woT2WMe.png',
+        'https://i.imgur.com/EWIl5sh.png',
+        'https://i.imgur.com/84YGebt.png',
+        'https://i.imgur.com/Mn6ZooL.png',
+        'https://i.imgur.com/bO4ge9l.png',
+        'https://i.imgur.com/3wkAKhZ.png',
+        'https://i.imgur.com/iIskH1t.png',
+        'https://i.imgur.com/PXeYnnr.png',
+        'https://i.imgur.com/lWwQJ2y.png',
+        'https://i.imgur.com/UPN61qB.png',
+        'https://i.imgur.com/2TOOHzO.png',
+        'https://i.imgur.com/FgUZVWJ.png',
+        'https://i.imgur.com/vFSPkTf.png',
+        'https://i.imgur.com/PdxOIRp.png',
+        'https://i.imgur.com/R0D64bZ.png',
+        'https://i.imgur.com/4FYFNVJ.png',
+        'https://i.imgur.com/LLw7koI.png',
+        'https://i.imgur.com/cfLIX6C.png',
+        'https://i.imgur.com/naOkOeK.png',
+        'https://i.imgur.com/Soz0mEj.png',
+        'https://i.imgur.com/e7NmYAG.png',
+        'https://i.imgur.com/xt0p7I7.png',
+        'https://i.imgur.com/LATonNA.png',
+        'https://i.imgur.com/FjFw6hH.png',
+        'https://i.imgur.com/DCkDka0.png',
+        'https://i.imgur.com/gDR2rxp.png',
+        'https://i.imgur.com/cEMq0FE.png',
+        'https://i.imgur.com/gNeCDBj.png',
+        'https://i.imgur.com/aCT0QiY.png',
+        'https://i.imgur.com/lh4n831.png',
+        'https://i.imgur.com/mPlmDHa.png'
+      ],
+      places: [
+        'https://i.imgur.com/qNUEEon.png',
+        'https://i.imgur.com/enjaIv2.png',
+        'https://i.imgur.com/YvzMgPv.png',
+        'https://i.imgur.com/p8yppVg.png',
+        'https://i.imgur.com/JpQPoKh.png',
+        'https://i.imgur.com/h01O87H.png',
+        'https://i.imgur.com/nayMROf.png',
+        'https://i.imgur.com/uAgZG2c.png',
+        'https://i.imgur.com/98ZZ9fx.png',
+        'https://i.imgur.com/cLILLmy.png',
+        'https://i.imgur.com/WIzbHkv.png',
+        'https://i.imgur.com/du2enWx.png',
+        'https://i.imgur.com/QjZTI7Z.png',
+        'https://i.imgur.com/YQbgRaU.png',
+        'https://i.imgur.com/fel0mIQ.png',
+        'https://i.imgur.com/KnazZW7.png',
+        'https://i.imgur.com/bt5LbUv.png',
+        'https://i.imgur.com/RlQ1yq9.png',
+        'https://i.imgur.com/hQ6OKmr.png',
+        'https://i.imgur.com/Qch4ETf.png',
+        'https://i.imgur.com/hftaJCm.png',
+        'https://i.imgur.com/bR4PdjK.png',
+        'https://i.imgur.com/yTc0MMU.png',
+        'https://i.imgur.com/4dGovC2.png',
+        'https://i.imgur.com/Z2jEZj8.png',
+        'https://i.imgur.com/4xK0eqb.png',
+        'https://i.imgur.com/18txsaL.png',
+        'https://i.imgur.com/EAwDhJY.png',
+        'https://i.imgur.com/1YXjhe1.png',
+        'https://i.imgur.com/RkvTaph.png',
+        'https://i.imgur.com/xXiyTRW.png',
+        'https://i.imgur.com/wHUT97L.png',
+        'https://i.imgur.com/6FUh01a.png',
+        'https://i.imgur.com/ugANe6h.png',
+        'https://i.imgur.com/DIKMFuy.png',
+        'https://i.imgur.com/gfqnLlQ.png'
+      ],
+      animals: [
+        'https://i.imgur.com/wPntuOI.png',
+        'https://i.imgur.com/U89Wz7I.png',
+        'https://i.imgur.com/8xz9RZP.png',
+        'https://i.imgur.com/YlTBcqt.png',
+        'https://i.imgur.com/1Kki3Tn.png',
+        'https://i.imgur.com/wN9SHCX.png',
+        'https://i.imgur.com/BtVHuIo.png',
+        'https://i.imgur.com/Huycxvz.png',
+        'https://i.imgur.com/4GqJwAC.png',
+        'https://i.imgur.com/vn4U0ZU.png',
+        'https://i.imgur.com/2WwwCKY.png',
+        'https://i.imgur.com/oDQrYKP.png',
+        'https://i.imgur.com/9w1nUfM.png',
+        'https://i.imgur.com/Hj11JtO.png',
+        'https://i.imgur.com/KNiji1I.png',
+        'https://i.imgur.com/RorttUj.png',
+        'https://i.imgur.com/lxYR3L6.png',
+        'https://i.imgur.com/fhFMfSF.png',
+        'https://i.imgur.com/c40odlE.png',
+        'https://i.imgur.com/3C3TOFv.png',
+        'https://i.imgur.com/MyelpTg.png',
+        'https://i.imgur.com/cOSeH5u.png',
+        'https://i.imgur.com/9JxEDzc.png',
+        'https://i.imgur.com/uoG5LD6.png',
+        'https://i.imgur.com/kPinJLr.png',
+        'https://i.imgur.com/HwWmnrA.png',
+        'https://i.imgur.com/qogA0E0.png',
+        'https://i.imgur.com/29j2Cf1.png',
+        'https://i.imgur.com/AhQRRVq.png',
+        'https://i.imgur.com/HVGI2Cw.png',
+        'https://i.imgur.com/of6Gesw.png',
+        'https://i.imgur.com/5kRHEAo.png',
+        'https://i.imgur.com/cuQSlBk.png',
+        'https://i.imgur.com/mNAyDzX.png',
+        'https://i.imgur.com/F5cg5IR.png',
+        'https://i.imgur.com/sNF1cgk.png'
+      ],
+      foods: [
+        'https://i.imgur.com/KOgQECA.png',
+        'https://i.imgur.com/Np7bWlY.png',
+        'https://i.imgur.com/Ye4STvu.png',
+        'https://i.imgur.com/7Cfyrfe.png',
+        'https://i.imgur.com/65cL3QA.png',
+        'https://i.imgur.com/MTjvvQ0.png',
+        'https://i.imgur.com/34jRuBd.png',
+        'https://i.imgur.com/QPrBCg0.png',
+        'https://i.imgur.com/d0aUtY0.png',
+        'https://i.imgur.com/N35v28f.png',
+        'https://i.imgur.com/4s8kI5T.png',
+        'https://i.imgur.com/elNDrww.png',
+        'https://i.imgur.com/79XZT4v.png',
+        'https://i.imgur.com/nB64DYq.png',
+        'https://i.imgur.com/a1rVVTk.png',
+        'https://i.imgur.com/bQNqNoh.png',
+        'https://i.imgur.com/VLxxwgl.png',
+        'https://i.imgur.com/eBD6ZVE.png',
+        'https://i.imgur.com/vbzYxuE.png',
+        'https://i.imgur.com/jftu2KW.png',
+        'https://i.imgur.com/SOa8Znw.png',
+        'https://i.imgur.com/Xrxv6BL.png',
+        'https://i.imgur.com/hqhVeZk.png',
+        'https://i.imgur.com/fOFMguF.png',
+        'https://i.imgur.com/VTGNI29.png',
+        'https://i.imgur.com/IixJJGy.png',
+        'https://i.imgur.com/VnCyuIe.png',
+        'https://i.imgur.com/fXIjODo.png',
+        'https://i.imgur.com/JdTT3DV.png',
+        'https://i.imgur.com/aM0mD8f.png',
+        'https://i.imgur.com/r2gmVDF.png',
+        'https://i.imgur.com/HRYkE4j.png',
+        'https://i.imgur.com/vP4hr7D.png',
+        'https://i.imgur.com/ORvkQdl.png',
+        'https://i.imgur.com/6iPfc0l.png',
+        'https://i.imgur.com/Cjc219b.png'
+      ],
+      activities: [
+        'https://i.imgur.com/eV1fONW.png',
+        'https://i.imgur.com/N9rRj5a.png',
+        'https://i.imgur.com/LkF4Wpb.png',
+        'https://i.imgur.com/1NBXuPF.png',
+        'https://i.imgur.com/J89njHB.png',
+        'https://i.imgur.com/eDnQLcl.png',
+        'https://i.imgur.com/FyZ0Ku2.png',
+        'https://i.imgur.com/LCV9eIb.png',
+        'https://i.imgur.com/ShRQMJ3.png',
+        'https://i.imgur.com/0TXO3Nu.png',
+        'https://i.imgur.com/7VJWk8s.png',
+        'https://i.imgur.com/hay4C9U.png',
+        'https://i.imgur.com/SKp5OKe.png',
+        'https://i.imgur.com/YtKdzRA.png',
+        'https://i.imgur.com/v7uWS5b.png',
+        'https://i.imgur.com/dOKNd2L.png',
+        'https://i.imgur.com/3xDemN9.png',
+        'https://i.imgur.com/8d1LQDB.png',
+        'https://i.imgur.com/8sDNlW9.png',
+        'https://i.imgur.com/lLxjqAx.png',
+        'https://i.imgur.com/dtQsxOu.png',
+        'https://i.imgur.com/cmRynim.png',
+        'https://i.imgur.com/P0TdwSq.png',
+        'https://i.imgur.com/UD0rM2P.png',
+        'https://i.imgur.com/EfiTeSH.png',
+        'https://i.imgur.com/oOuY7rr.png',
+        'https://i.imgur.com/94nDvSl.png',
+        'https://i.imgur.com/AGCVpc1.png',
+        'https://i.imgur.com/c4iTbx2.png',
+        'https://i.imgur.com/x5wZIpY.png',
+        'https://i.imgur.com/6mYjYlN.png',
+        'https://i.imgur.com/USZb6DE.png',
+        'https://i.imgur.com/IFS2NDr.png',
+        'https://i.imgur.com/cUAqrZ6.png',
+        'https://i.imgur.com/URoycdE.png',
+        'https://i.imgur.com/K1JN2iV.png'
+      ]
+    };
 
     let selectedCardIndex = null;
     let cards = [];
@@ -614,6 +790,7 @@
     let isGameAnswerRevealed = false;
     let currentGridLayout = 'classic'; // Default layout
     let currentSize = 'normal'; // Default size
+    let currentType = 'people'; // Default type
     let currentImages = []; // Will hold the current set of images
 
     function getRandomSubset(array, size) {
@@ -621,24 +798,43 @@
       return shuffled.slice(0, size);
     }
 
+    function getMixedImages(size) {
+      const allCategories = ['people', 'places', 'animals', 'foods', 'activities'];
+      const imagesPerCategory = Math.ceil(size / allCategories.length);
+      let mixedImages = [];
+      
+      allCategories.forEach(category => {
+        const categoryImages = imageSets[category] || [];
+        const shuffled = categoryImages.slice().sort(() => 0.5 - Math.random());
+        mixedImages = mixedImages.concat(shuffled.slice(0, imagesPerCategory));
+      });
+      
+      // Shuffle again and trim to exact size
+      mixedImages = mixedImages.sort(() => 0.5 - Math.random()).slice(0, size);
+      return mixedImages;
+    }
+
     function createCards() {
       characterGrid.innerHTML = '';
       characterGrid.className = 'character-grid grid-' + currentGridLayout;
       
-      // Determine which images to use based on size selection
-      if (currentSize === 'mini') {
-        currentImages = getRandomSubset(frontImages, 12);
-      } else if (currentSize === 'normal') {
-        currentImages = frontImages.slice(0, 24);
-      } else if (currentSize === 'big') {
-        currentImages = frontImages.slice(0, 36);
-      }
+      // Set size mode class
+      gamePage.classList.remove('mini-mode', 'normal-mode', 'big-mode');
+      gamePage.classList.add(currentSize + '-mode');
       
-      // Reduce margins in mini mode
-      if (currentSize === 'mini') {
-        document.querySelector('.answer-container').style.margin = '5px auto';
+      // Determine which images to use based on type and size selection
+      if (currentType === 'mix') {
+        currentImages = getMixedImages(currentSize === 'mini' ? 12 : 
+                       currentSize === 'normal' ? 24 : 36);
       } else {
-        document.querySelector('.answer-container').style.margin = '10px auto';
+        const categoryImages = imageSets[currentType] || [];
+        if (currentSize === 'mini') {
+          currentImages = getRandomSubset(categoryImages, 12);
+        } else if (currentSize === 'normal') {
+          currentImages = categoryImages.slice(0, 24);
+        } else if (currentSize === 'big') {
+          currentImages = categoryImages.slice(0, 36);
+        }
       }
       
       currentImages.forEach((src, i) => {
@@ -793,6 +989,7 @@
     continueBtn.addEventListener('click', () => {
       currentGridLayout = layoutSelect.value;
       currentSize = sizeSelect.value;
+      currentType = typeSelect.value;
       setupPage.classList.remove('show');
       gamePage.classList.add('show');
       characterSelection.classList.add('show-section');

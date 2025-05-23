@@ -247,13 +247,17 @@
       transform: scale(1.05);
     }
 
-    #refresh-btn {
-      background: #2196F3;
-    }
+  #refresh-btn {
+    background: none;
+    color: #333;
+    font-size: 1.5em;
+    padding: 5px 10px;
+  }
 
-    #refresh-btn:hover {
-      background: #0b7dda;
-    }
+  #refresh-btn:hover {
+    background: #4CAF50;
+    color: white;
+  }
 
     .button-container {
       display: flex;
@@ -470,19 +474,19 @@
     <div class="setup-select-container">
       <label class="setup-select-label">Layout</label>
       <select class="setup-select" id="layout-select">
-        <option value="classic">Classic (6×4)</option>
-        <option value="clear">Clear (8×3)</option>
-        <option value="zoom">Zoom (12×2)</option>
+        <option value="classic">Classic 4 columns</option>
+        <option value="clear">Clear 3 columns</option>
+        <option value="zoom">Zoom 2 columns</option>
       </select>
     </div>
     
     <div class="setup-select-container">
       <label class="setup-select-label">Size</label>
-      <select class="setup-select" id="size-select">
-        <option value="mini">Mini (12)</option>
-        <option value="normal">Normal (24)</option>
-        <option value="big">Big (36)</option>
-      </select>
+<select class="setup-select" id="size-select">
+  <option value="mini">Mini (12)</option>
+  <option value="normal" selected>Normal (24)</option>
+  <option value="big">Big (36)</option>
+</select>
     </div>
     
     <div class="setup-select-container">

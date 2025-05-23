@@ -497,7 +497,6 @@
         <option value="animals">Animals</option>
         <option value="foods">Foods</option>
         <option value="activities">Activities</option>
-        <option value="mix">Mix</option>
       </select>
     </div>
     
@@ -797,27 +796,6 @@
     let currentType = 'people'; // Default type
     let currentImages = []; // Will hold the current set of images
 
-    function getRandomSubset(array, size) {
-      const shuffled = array.slice().sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, size);
-    }
-
-    function getMixedImages(size) {
-      const allCategories = ['people', 'places', 'animals', 'foods', 'activities'];
-      const imagesPerCategory = Math.ceil(size / allCategories.length);
-      let mixedImages = [];
-      
-      allCategories.forEach(category => {
-        const categoryImages = imageSets[category] || [];
-        const shuffled = categoryImages.slice().sort(() => 0.5 - Math.random());
-        mixedImages = mixedImages.concat(shuffled.slice(0, imagesPerCategory));
-      });
-      
-      // Shuffle again and trim to exact size
-      mixedImages = mixedImages.sort(() => 0.5 - Math.random()).slice(0, size);
-      return mixedImages;
-    }
-
     function createCards() {
       characterGrid.innerHTML = '';
       characterGrid.className = 'character-grid grid-' + currentGridLayout;
@@ -826,19 +804,18 @@
       gamePage.classList.remove('mini-mode', 'normal-mode', 'big-mode');
       gamePage.classList.add(currentSize + '-mode');
       
-      // Determine which images to use based on type and size selection
-      if (currentType === 'mix') {
-        currentImages = getMixedImages(currentSize === 'mini' ? 12 : 
-                       currentSize === 'normal' ? 24 : 36);
-      } else {
-        const categoryImages = imageSets[currentType] || [];
-        if (currentSize === 'mini') {
-          currentImages = getRandomSubset(categoryImages, 12);
-        } else if (currentSize === 'normal') {
-          currentImages = categoryImages.slice(0, 24);
-        } else if (currentSize === 'big') {
-          currentImages = categoryImages.slice(0, 36);
-        }
+      // Get the selected category images
+      const categoryImages = imageSets[currentType] || [];
+      
+      // Determine how many images to use based on size
+      if (currentSize === 'mini') {
+        currentImages = categoryImages.slice(0, 12);
+      } else if (currentSize === 'normal') {
+        currentImages = categoryImages.slice(0, 24);
+      } else if (currentSize === 'big') {
+        // For big size, we'll still use random selection from the full set
+        const shuffled = [...categoryImages].sort(() => 0.5 - Math.random());
+        currentImages = shuffled.slice(0, 36);
       }
       
       currentImages.forEach((src, i) => {
